@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssignHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AssignHub</h1>
+        <button id="themeToggle">Toggle Theme</button>
+    </header>
+
+    <main>
+        <!-- Removed loading animation -->
+        <section id="inputSection">
+            <h2>Input Your Assignment</h2>
+            <form id="assignmentForm">
+                <label for="pageLayout">Page Layout:</label>
+                <select id="pageLayout" name="pageLayout">
+                    <option value="lined">Lined</option>
+                    <option value="grid">Grid</option>
+                    <option value="blank">Blank</option>
+                </select>
+
+                <label for="handwritingFont">Handwriting Font:</label>
+                <select id="handwritingFont" name="handwritingFont">
+                    <option value="CustomHandwriting">Custom Handwriting</option>
+                </select>
+                <button type="button" id="previewFont">Preview Font</button>
+
+                <label for="content">Assignment Content:</label>
+                <textarea id="content" name="content" rows="10" cols="50" required></textarea>
+
+                <div id="wordCounter">Words: 0 | Pages: 0</div>
+
+                <div id="pricingDisplay">Total Price: ₹0</div>
+
+                <button type="submit">Generate Assignment</button>
+            </form>
+        </section>
+
+        <section id="previewSection">
+            <h2>Live Page Preview</h2>
+            <div id="livePreview"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 Academic Assignment Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark-theme');
+        });
+
+        // Word and page counter
+        const content = document.getElementById('content');
+        const wordCounter = document.getElementById('wordCounter');
+        const pricingDisplay = document.getElementById('pricingDisplay');
+
+        content.addEventListener('input', () => {
+            const words = content.value.trim().split(/\s+/).length;
+            const pages = Math.ceil(words / 250); // Assuming 250 words per page
+            const price = pages * 1; // ₹1 per page
+
+            wordCounter.textContent = `Words: ${words} | Pages: ${pages}`;
+            pricingDisplay.textContent = `Total Price: ₹${price}`;
+
+            updateLivePreview();
+        });
+
+        // Live preview
+        const livePreview = document.getElementById('livePreview');
+        const handwritingFont = document.getElementById('handwritingFont');
+        const pageLayout = document.getElementById('pageLayout');
+
+        function updateLivePreview() {
+            livePreview.style.fontFamily = handwritingFont.value;
+            livePreview.style.backgroundImage = `url('${pageLayout.value}-background.png')`;
+            livePreview.textContent = content.value;
+        }
+
+        handwritingFont.addEventListener('change', updateLivePreview);
+        pageLayout.addEventListener('change', updateLivePreview);
+
+        // Form submission
+        const form = document.getElementById('assignmentForm');
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const formData = {
+                content: content.value,
+                font: handwritingFont.value,
+                layout: pageLayout.value
+            };
+
+            fetch('/generate_assignment', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            })
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'assignment.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert('An error occurred while generating the assignment.');
+            });
+        });
+    </script>
+</body>
+</html>

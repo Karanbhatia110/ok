@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Output - AssignHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="gradient-bg">
+        <div class="gradient-animation"></div>
+    </div>
+    
+    <header class="funky-header">
+        <h1 class="glowing-text">AssignHub</h1>
+    </header>
+
+    <main>
+        <section>
+            <h2 class="animated-title">Generated Content</h2>
+            <div class="content-preview" id="contentPreview">
+                <!-- Content will be loaded here -->
+            </div>
+            
+            <div class="button-group">
+                <button class="hover-lift" onclick="window.location.href='/input'">
+                    <i class="fas fa-pencil-alt"></i> Generate New Content
+                </button>
+                <button id="downloadPDF" class="hover-lift">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            </div>
+
+            <div class="share-section">
+                <h3>Share with Friends</h3>
+                <div class="share-buttons">
+                    <button class="share-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button class="share-btn telegram">
+                        <i class="fab fa-telegram"></i> Telegram
+                    </button>
+                    <button class="share-btn copy-link">
+                        <i class="fas fa-link"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="funky-footer">
+        <p>© 2024 Academic Assignment Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Load and display content when page loads
+        window.addEventListener('DOMContentLoaded', () => {
+            const content = localStorage.getItem('generatedContent');
+            const contentPreview = document.getElementById('contentPreview');
+            
+            if (content && content !== 'undefined') {
+                const paragraphs = content.split('\n').filter(line => line.trim() !== '');
+                if (paragraphs.length > 0) {
+                    contentPreview.innerHTML = paragraphs
+                        .map(para => `<p>${para}</p>`)
+                        .join('');
+                } else {
+                    contentPreview.innerHTML = '<div class="no-content">Content appears to be empty. Please go back and generate content again.</div>';
+                }
+            } else {
+                contentPreview.innerHTML = '<div class="no-content">No content found. Please go back and generate content first.</div>';
+            }
+        });
+
+        // PDF Generation
+        document.getElementById('downloadPDF').addEventListener('click', async () => {
+            try {
+                const content = localStorage.getItem('generatedContent');
+                const penColor = localStorage.getItem('penColor');
+                
+                const response = await fetch('/generate_pdf', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': await getCSRFToken()
+                    },
+                    body: JSON.stringify({
+                        content: content,
+                        font: 'CustomHandwriting',
+                        penColor: penColor,
+                        layout: 'lined'
+                    })
+                });
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = 'assignment.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error generating PDF. Please try again.');
+            }
+        });
+
+        async function getCSRFToken() {
+            const response = await fetch('/get-csrf-token');
+            const data = await response.json();
+            return data.csrf_token;
+        }
+
+        // Share buttons functionality
+        const whatsappBtn = document.querySelector('.whatsapp');
+        const telegramBtn = document.querySelector('.telegram');
+        const copyLinkBtn = document.querySelector('.copy-link');
+
+        // WhatsApp share
+        whatsappBtn.addEventListener('click', () => {
+            const shareText = "Generate handwritten assignments instantly with AssignHub!";
+            const shareUrl = "https://assignhub.in";
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + " " + shareUrl)}`;
+            window.open(whatsappUrl, '_blank');
+        });
+
+        // Telegram share
+        telegramBtn.addEventListener('click', () => {
+            const shareText = "Generate handwritten assignments instantly with AssignHub!";
+            const shareUrl = "https://assignhub.in";
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareText)}`;
+            window.open(telegramUrl, '_blank');
+        });
+
+        // Copy link
+        copyLinkBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText('https://assignhub.in');
+                copyLinkBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                setTimeout(() => {
+                    copyLinkBtn.innerHTML = '<i class="fas fa-link"></i> Copy Link';
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy link. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download - AssignHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>AssignHub</h1>
+        <!-- Removed the button -->
+    </header>
+    <main>
+        <!-- Removed loading animation -->
+        <section id="downloadSection">
+            <h2>Download Your Assignment</h2>
+            <form id="downloadForm">
+                <label for="pageLayout">Page Layout:</label>
+                <select id="pageLayout" name="pageLayout">
+                    <option value="lined">Lined</option>
+                    <option value="grid">Grid</option>
+                    <option value="blank">Blank</option>
+                </select>
+
+                <label for="handwritingFont">Handwriting Font:</label>
+                <select id="handwritingFont" name="handwritingFont">
+                    <option value="CustomHandwriting">Custom Handwriting</option>
+                </select>
+
+                <div id="pricingDisplay">Total Price: ₹0</div>
+
+                <button type="submit">Generate PDF</button>
+            </form>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2023 Academic Assignment Generator. All rights reserved.</p>
+    </footer>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const content = localStorage.getItem('editedContent');
+            const words = content.trim().split(/\s+/).length;
+            const pages = Math.ceil(words / 250); // Assuming 250 words per page
+            const price = pages * 1; // ₹1 per page
+            document.getElementById('pricingDisplay').textContent = `Total Price: ₹${price}`;
+        });
+
+        document.getElementById('downloadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const content = localStorage.getItem('editedContent');
+            const font = document.getElementById('handwritingFont').value;
+            const layout = document.getElementById('pageLayout').value;
+            const penColor = localStorage.getItem('penColor');
+
+            const response = await fetch('/generate_pdf', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content, font, layout, penColor }),
+            });
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'assignment.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>

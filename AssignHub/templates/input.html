@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input - AssignHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="gradient-bg">
+        <div class="gradient-animation"></div>
+    </div>
+    
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <header class="funky-header">
+        <h1 class="glowing-text">AssignHub</h1>
+    </header>
+
+    <main>
+        <section class="input-section">
+            <h2 class="animated-title">Input Assignment Details</h2>
+            <form id="inputForm">
+                <div class="form-group">
+                    <label for="topic">Assignment Topic/Prompt:</label>
+                    <textarea id="topic" name="topic" rows="3" required 
+                        placeholder="Enter the topic or prompt for your assignment"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="pages">Number of Pages:</label>
+                    <input type="number" id="pages" name="pages" required min="1">
+                </div>
+
+                <div class="form-group">
+                    <label for="penColor">Ball Pen Color:</label>
+                    <select id="penColor" name="penColor">
+                        <option value="blue">Blue</option>
+                        <option value="black">Black</option>
+                        <option value="red">Red</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="hover-lift">
+                    <i class="fas fa-magic"></i> Generate Content
+                </button>
+            </form>
+        </section>
+    </main>
+
+    <footer class="funky-footer">
+        <p>© 2024 Academic Assignment Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let csrfToken = '';
+
+        async function initializeCSRF() {
+            try {
+                const response = await fetch('/get-csrf-token');
+                const data = await response.json();
+                csrfToken = data.csrf_token;
+            } catch (error) {
+                console.error('Error getting CSRF token:', error);
+            }
+        }
+
+        initializeCSRF();
+
+        document.getElementById('inputForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const progressBar = document.querySelector('.loading-progress');
+            
+            loadingOverlay.style.display = 'flex';
+            
+            let progress = 0;
+            const progressInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 90) clearInterval(progressInterval);
+                progressBar.style.width = Math.min(progress, 90) + '%';
+            }, 500);
+
+            const topic = document.getElementById('topic').value;
+            const pages = document.getElementById('pages').value;
+            const penColor = document.getElementById('penColor').value;
+
+            try {
+                const contentResponse = await fetch('/generate_content', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrfToken
+                    },
+                    body: JSON.stringify({ topic, pages, penColor }),
+                });
+                
+                const contentData = await contentResponse.json();
+                
+                clearInterval(progressInterval);
+                progressBar.style.width = '100%';
+                
+                if (contentData.content) {
+                    localStorage.setItem('generatedContent', contentData.content);
+                    localStorage.setItem('penColor', penColor);
+                    localStorage.setItem('pages', pages);
+                    
+                    setTimeout(() => {
+                        window.location.href = '/output';
+                    }, 500);
+                } else {
+                    loadingOverlay.style.display = 'none';
+                    alert('No content was generated. Please try again.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                loadingOverlay.style.display = 'none';
+                alert('Error generating content. Please try again.');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AssignHub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="gradient-bg">
+        <div class="gradient-animation"></div>
+    </div>
+    
+    <div class="promo-banner">
+        <div class="promo-content">
+            <i class="fas fa-gift"></i>
+            <span class="promo-text">Limited Time Offer: Currently FREE! Regular price ₹2/page</span>
+            <i class="fas fa-gift"></i>
+        </div>
+    </div>
+    
+    <header class="funky-header">
+        <h1 class="glowing-text">AssignHub</h1>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h2 class="animated-title">Welcome to Academic Assignment Generator</h2>
+            <p class="hero-description" id="typingText"></p>
+            <div class="key-features">
+                <span class="feature-tag bounce"><i class="fas fa-robot"></i> AI-Powered</span>
+                <span class="feature-tag bounce"><i class="fas fa-pen-fancy"></i> Handwritten Style</span>
+                <span class="feature-tag bounce"><i class="fas fa-copy"></i> Multiple Pages</span>
+                <span class="feature-tag bounce"><i class="fas fa-download"></i> Instant Download</span>
+            </div>
+            <a href="{{ url_for('input_page') }}" class="button get-started-btn pulse">
+                Get Started <i class="fas fa-arrow-right"></i>
+            </a>
+        </section>
+
+        <section class="how-it-works">
+            <h2 class="section-title">How It Works</h2>
+            <div class="steps-container">
+                <div class="step-card hover-lift">
+                    <div class="step-number rotating">1</div>
+                    <h3><i class="fas fa-pencil-alt"></i> Enter Your Topic</h3>
+                    <p>Simply input your assignment topic and choose the number of pages you need. Our AI will handle the rest!</p>
+                    <ul class="feature-list">
+                        <li class="slide-in">Any academic topic</li>
+                        <li class="slide-in">Choose page count</li>
+                        <li class="slide-in">Select pen color</li>
+                    </ul>
+                </div>
+                <div class="step-card hover-lift">
+                    <div class="step-number rotating">2</div>
+                    <h3><i class="fas fa-magic"></i> Generate Content</h3>
+                    <p>Our advanced AI generates high-quality, natural-looking content that mimics handwritten assignments.</p>
+                    <ul class="feature-list">
+                        <li class="slide-in">AI-powered content</li>
+                        <li class="slide-in">Natural flow</li>
+                        <li class="slide-in">Perfect formatting</li>
+                    </ul>
+                </div>
+                <div class="step-card hover-lift">
+                    <div class="step-number rotating">3</div>
+                    <h3><i class="fas fa-file-pdf"></i> Download PDF</h3>
+                    <p>Get your handwritten-style PDF instantly, ready to submit! <br></p>
+                    <br>
+                    <br>
+                    <ul class="feature-list">
+                        <li class="slide-in">Instant download</li>
+                        <li class="slide-in">Handwritten look</li>
+                        <li class="slide-in">PDF format</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section class="features-showcase">
+            <h2 class="section-title">Premium Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-palette fa-3x"></i>
+                    <h3>Multiple Pen Colors</h3>
+                    <p>Choose from blue, black, or red ink colors for your handwritten assignments</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-ruler fa-3x"></i>
+                    <h3>Paper Styles</h3>
+                    <p>Select between lined or grid paper backgrounds for your needs</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-text-height fa-3x"></i>
+                    <h3>Perfect Formatting</h3>
+                    <p>Consistent spacing and margins throughout your assignment</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt fa-3x"></i>
+                    <h3>100% Private</h3>
+                    <p>Your content remains confidential and is never stored</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="faq-section">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3><i class="fas fa-question-circle"></i> How many pages can I generate?</h3>
+                    <p>You can generate assignments of any length, from 1 to multiple pages.</p>
+                </div>
+                <div class="faq-item">
+                    <h3><i class="fas fa-question-circle"></i> What topics are supported?</h3>
+                    <p>Our AI supports all academic subjects and topics.</p>
+                </div>
+                <div class="faq-item">
+                    <h3><i class="fas fa-question-circle"></i> How realistic is the handwriting?</h3>
+                    <p>Our handwriting style is designed to look natural and authentic.</p>
+                </div>
+                <div class="faq-item">
+                    <h3><i class="fas fa-question-circle"></i> Can I edit the generated content?</h3>
+                    <p>Yes, you can regenerate content until you're satisfied with the result.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Ready to Transform Your Assignments?</h2>
+            <p>Join thousands of students who are already saving time with AssignHub</p>
+            <a href="{{ url_for('input_page') }}" class="button get-started-btn pulse">
+                Start Now <i class="fas fa-rocket"></i>
+            </a>
+        </section>
+    </main>
+
+    <footer class="funky-footer">
+        <p>© 2024 Academic Assignment Generator. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const text = "Transform your assignments into handwritten-style PDFs instantly!";
+            const typingText = document.getElementById('typingText');
+            let index = 0;
+
+            function type() {
+                if (index < text.length) {
+                    typingText.innerHTML = text.slice(0, index + 1) + '<span class="typing-cursor"></span>';
+                    index++;
+                    setTimeout(type, 100); // Adjust speed here (lower = faster)
+                } else {
+                    typingText.innerHTML = text + '<span class="typing-cursor"></span>';
+                }
+            }
+
+            type();
+        });
+    </script>
+</body>
+</html>
